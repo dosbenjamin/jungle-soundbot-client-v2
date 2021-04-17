@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    @apply text-base;
+  }
+
+  body {
+    @apply antialiased font-mono;
+    text-rendering: optimizeLegibility;
+  }
+}
