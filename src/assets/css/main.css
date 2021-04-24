@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply antialiased font-mono;
+    @apply antialiased leading-none font-mono text-white bg-blue-900 font-semibold;
     text-rendering: optimizeLegibility;
   }
 }
