@@ -1,22 +1,57 @@
-import React, { useReducer, useState, useEffect, useContext } from 'react'
+import React, { useReducer, useState, useEffect } from 'react'
 
-const inputReducer = (state, { type, payload }) => {
+const reducer = (state, { type, payload }) => {
   const actions = {
     CHECK_INPUT: () => {
       const [name, value] = payload
 
-      if (value.length) {
-        return { ...state, [name]: { error: false, completed: true }}
+      return {
+        ...state,
+        [name]: {
+          error: {
+            status: false,
+            message: state[name].error.message
+          },
+          completed: value.length ? true : false,
+          value
+        }
       }
-
-      return { ...state, [name]: { error: false, completed: false }}
     },
-    SET_ERROR: () => {
-      const newState = payload.reduce((state, [name]) => {
-        return { ...state, [name]: { error: true, completed: false } }
-      }, {})
+    SET_DEFAULT_ERROR: () => {
+      const { wrongs, initialState } = payload
 
-      return { ...state, ...newState }
+      return {
+        ...state,
+        ...wrongs.reduce((newState, { name }) => {
+          return {
+            ...newState,
+            [name]: {
+              ...state[name],
+              error: {
+                status: true,
+                message: initialState[name].error.message
+              }
+            }
+          }
+        }, {})
+      }
+    },
+    SET_CUSTOM_ERROR: () => {
+      return {
+        ...state,
+        ...payload.reduce((newState, { name, error }) => {
+          return {
+            ...newState,
+            [name]: {
+              ...state[name],
+              error: {
+                status: true,
+                message: error.message
+              }
+            }
+          }
+        }, {})
+      }
     },
     SET_INITIAL: () => ({ ...payload })
   }
@@ -25,42 +60,77 @@ const inputReducer = (state, { type, payload }) => {
 }
 
 export default initialState => {
-  const [inputs, dispatchInputs] = useReducer(inputReducer, initialState)
+  const [state, dispatch] = useReducer(reducer, initialState)
   const [disabled, setDisabled] = useState(true)
   const [errors, setErrors] = useState([])
 
-  const watch = name => value => dispatchInputs({
+  const watch = name => value => dispatch({
     type: 'CHECK_INPUT',
     payload: [name, value]
   })
 
-  const catchErrors = (inputs, dispatchInputs, setErrors) => {
-    const wrongs = Object.entries(inputs)
-      .filter(([name, status]) => !status.completed)
+  const setCustomErrors = errors => dispatch({
+    type: 'SET_CUSTOM_ERROR',
+    payload: errors
+  })
 
-    setErrors(() => wrongs.map(([name]) => name))
+  const reset = () => dispatch({
+    type: 'SET_INITIAL',
+    payload: initialState
+  })
 
-    if (wrongs.length) {
-      dispatchInputs({ type: 'SET_ERROR', payload: wrongs })
-      return true
-    }
+  const catchErrors = (state, callback) => {
+    return Object.entries(state)
+      .map(callback)
+      .filter(Boolean)
   }
 
   const validateForm = () => {
-    const hasErrors = catchErrors(inputs, dispatchInputs, setErrors)
+    const wrongs = catchErrors(
+      state,
+      ([name, values]) => {
+        return !values.completed
+          && { name, ...values }
+      }
+    )
 
-    if (hasErrors) return { status: 'error' }
+    setErrors(wrongs.map(error => error))
 
-    dispatchInputs({ type: 'SET_INITIAL', payload: initialState })
-    return { status: 'ok' }
+    if (wrongs.length) {
+      dispatch({
+        type: 'SET_DEFAULT_ERROR',
+        payload: { wrongs, initialState }
+      })
+      return { isValid: false }
+    }
+
+    return { isValid: true }
   }
 
   useEffect(() => {
+    const wrongs = catchErrors(
+      state,
+      ([name, values]) => {
+        return values.error.status
+          && { name, ...values }
+      }
+    )
+
+    setErrors(wrongs.map(error => error))
+
     setDisabled(() => {
-      return !Object.values(inputs)
+      return !Object.values(state)
         .every(({ completed }) => completed ? true : false)
     })
-  }, [inputs])
+  }, [state])
 
-  return { watch, disabled, inputs, validateForm, errors }
+  return {
+    watch,
+    reset,
+    errors,
+    disabled,
+    validateForm,
+    setCustomErrors,
+    form: state
+  }
 }
