@@ -11,4 +11,12 @@
     @apply antialiased leading-none font-mono text-white bg-blue-900 font-semibold;
     text-rendering: optimizeLegibility;
   }
+
+  ::-webkit-scrollbar {
+    @apply bg-blue-225 w-1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-grey;
+  }
 }
