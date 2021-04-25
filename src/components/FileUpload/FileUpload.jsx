@@ -30,6 +30,7 @@ export default ({ label, name, error, handler, className, defaultPlaceholder, dr
         <input
           {...getInputProps({ multiple: false })}
           onChange={changeHandler}
+          onClick={() => rootRef.current.blur()}
           id={name}
           name={name}
         />
