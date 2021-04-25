@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import useApi from '@/hooks/useApi'
+import React, { useState, useEffect, useContext, createContext } from 'react'
+import useSounds from '@/hooks/useSounds'
 
-export default () => {
-  const [sounds, setSounds] = useState([])
-  const makeRequest = useApi()
+export const SoundsContext = createContext()
 
-  const getSoundsList = async () => {
-    const request = await makeRequest('sounds')
-    const sounds = await request.json()
-    setSounds(sounds.reverse())
-  }
+export default ({ soundsList }) => {
+  const { sounds, refreshSounds } = useSounds()
+  const setSounds = useContext(SoundsContext)
 
-  useEffect(() => getSoundsList(), [])
+  useEffect(() => {
+    refreshSounds()
+  }, [])
+
+  useEffect(() => setSounds(() => sounds), [sounds])
 
   return (
     <div className="p-12 mt-2 bg-blue-775">
       <h2 className="text-lg">Tous les sons</h2>
       <ul className="h-full max-h-[328px] overflow-y-scroll mt-8">
-        {sounds.map(({ id, command, author }, index) => (
+        {soundsList.map(({ id, command, author }, index) => (
           <li
             key={id}
             className={`font-normal text-grey ${index > 0 ? 'mt-2' : ''}`}

@@ -5,11 +5,15 @@ import FileUpload from '@/components/FileUpload/FileUpload'
 import Button from '@/components/Button/Button'
 import { ErrorContext } from '@/components/Error/Error'
 import useApi from '@/hooks/useApi'
+import { SoundsContext } from '@/components/SoundsList/SoundsList'
+import useSounds from '@/hooks/useSounds'
 
 export default () => {
   const [commandName, setCommandName] = useState('hello')
   const [step, setStep] = useState('register')
   const setErrorToasts = useContext(ErrorContext)
+  const setSounds = useContext(SoundsContext)
+  const { sounds, refreshSounds } = useSounds()
   const makeRequest = useApi()
 
   const {
@@ -72,8 +76,9 @@ export default () => {
           )
         }
 
-        setCommandName(command.value)
+        refreshSounds()
         setStep('success')
+        setCommandName(command.value)
         reset()
       } catch (error) {
         return setErrorToasts([{
@@ -87,13 +92,14 @@ export default () => {
   }
 
   useEffect(() => setErrorToasts(errors), [errors])
+  useEffect(() => setSounds(sounds), [sounds])
 
   return (
     <>
       {step === 'register' ? (
         <>
           <h2 className="text-lg">Ajouter un son</h2>
-          <form onSubmit={submitHandler}>
+          <form className="mt-8" onSubmit={submitHandler}>
             <Input
               label="Ton nom/pseudo"
               placeholder="ex. Benjamin"
