@@ -15,14 +15,14 @@ export default () => {
 
   return (
     <div className="p-12 mt-2 bg-blue-775">
-      <h2 className="text-lg">Derniers sons ajoutés</h2>
+      <h2 className="text-lg">Tous les sons</h2>
       <ul className="h-full max-h-[328px] overflow-y-scroll mt-8">
         {sounds.map(({ id, command, author }, index) => (
           <li
             key={id}
             className={`font-normal text-grey ${index > 0 ? 'mt-2' : ''}`}
           >
-            {command} par <strong className="font-semibold">{author}</strong>
+            {command} ➝ <strong className="font-semibold">{author}</strong>
           </li>
         ))}
       </ul>
