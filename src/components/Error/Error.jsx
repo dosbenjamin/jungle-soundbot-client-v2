@@ -1,5 +1,4 @@
-import React, { createContext } from 'react'
-import { useEffect, useState } from 'react/cjs/react.development'
+import React, { createContext, useEffect, useState } from 'react'
 
 export const ErrorContext = createContext([])
 
