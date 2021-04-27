@@ -14,7 +14,7 @@ export default ({ label, name, error, handler, className, ...rest }) => {
       <label htmlFor={name}>{label}</label>
       <input
         onChange={changeHandler}
-        className={`block w-full p-4 mt-4 bg-blue-775 border outline-none focus:border-grey transition-colors ${borderColor}`}
+        className={`block w-full p-4 mt-4 bg-blue-775 border placeholder-grey outline-none focus:border-grey transition-colors ${borderColor}`}
         name={name}
         id={name}
         {...rest}
