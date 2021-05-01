@@ -7,6 +7,7 @@ import { ErrorContext } from '@/components/Error/Error'
 import useApi from '@/hooks/useApi'
 import { SoundsContext } from '@/components/SoundsList/SoundsList'
 import useSounds from '@/hooks/useSounds'
+import { GooSpinner } from 'react-spinners-kit'
 
 export default () => {
   const [commandName, setCommandName] = useState('hello')
@@ -15,6 +16,7 @@ export default () => {
   const setSounds = useContext(SoundsContext)
   const { sounds, refreshSounds } = useSounds()
   const makeRequest = useApi()
+  const [loaded, setLoaded] = useState(true)
 
   const {
     watch,
@@ -56,12 +58,16 @@ export default () => {
 
     const { isValid } = validateForm()
 
+    setLoaded(false)
+
     if (isValid) {
       try {
         const { status } = await makeRequest('upload', {
           method: 'POST',
           body: new FormData(event.target)
         })
+
+        setLoaded(true)
 
         if (status === 409) {
           return setCustomErrors(
@@ -130,7 +136,14 @@ export default () => {
               className="block mx-auto mt-8"
               label="Ajouter"
               disabled={disabled}
-            />
+            >
+              {!loaded && (
+                <GooSpinner
+                  size={16}
+                  color="#222831"
+                />
+              )}
+            </Button>
           </form>
         </>
       ) : (
