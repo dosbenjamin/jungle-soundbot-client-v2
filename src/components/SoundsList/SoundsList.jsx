@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createContext } from 'react'
+import React, { useEffect, useContext, createContext } from 'react'
 import useSounds from '@/hooks/useSounds'
 import { GooSpinner } from "react-spinners-kit"
 
@@ -16,11 +16,11 @@ export default ({ soundsList }) => {
       <h2 className="text-lg">Tous les sons</h2>
       {loaded ?
         (
-          <ul className="h-full max-h-[328px] overflow-y-scroll mt-8">
+          <ul className="font-normal text-grey h-full max-h-[328px] overflow-y-scroll mt-8">
             {soundsList.map(({ id, command, author }, index) => (
               <li
                 key={id}
-                className={`font-normal text-grey ${index > 0 ? 'mt-2' : ''}`}
+                className={`${index > 0 ? 'mt-2' : ''}`}
               >
                 {command} ➝ <strong className="font-semibold">{author}</strong>
               </li>
